@@ -1,0 +1,15 @@
+settings:
+  post_interval_hours: 6
+  max_news_per_source: 5
+  request_timeout: 30
+
+filters:
+  include_keywords: []
+  exclude_keywords: []
+
+sources:
+  - name: "Python Insider"
+    type: "rss"
+    url: "https://pythoninsider.blogspot.com/feeds/posts/default"
+    enabled: true
+    category: "python"

@@ -1,0 +1,7 @@
+aiogram==3.*
+aiohttp
+feedparser
+pyyaml
+python-dotenv
+pytest
+pytest-asyncio
