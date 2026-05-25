@@ -12,7 +12,7 @@ from news_bot.bot.handlers import create_router
 from news_bot.bot.scheduler import scheduler_loop
 from news_bot.config.loader import load_config
 from news_bot.core.pipeline import Pipeline
-from news_bot.parsers.rss import RssFetcher
+from news_bot.parsers.composite import CompositeFetcher
 from news_bot.publishers.telegram import TelegramPublisher
 from news_bot.utils.db import Database
 from news_bot.utils.logging import setup_logging
@@ -31,7 +31,7 @@ async def main() -> None:
     else:
         bot = Bot(token=config.bot_token)
     publisher = TelegramPublisher(bot, config.channel_id)
-    fetcher = RssFetcher()
+    fetcher = CompositeFetcher()
     pipeline = Pipeline(config, fetcher, publisher, db)
 
     publish_lock = asyncio.Lock()

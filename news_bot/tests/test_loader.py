@@ -21,10 +21,22 @@ def test_load_config_reads_yaml(env_vars: None) -> None:
     assert config.settings.max_news_per_source == 5
     assert config.filters.include_keywords == []
     assert config.filters.exclude_keywords == []
-    assert len(config.sources) >= 1
-    assert config.sources[0].name == "Python Insider"
+    assert len(config.sources) == 2
+    assert config.sources[0].name == "Habr"
     assert config.sources[0].type == "rss"
+    assert config.sources[0].url == "https://habr.com/ru/rss/news/"
     assert config.sources[0].enabled is True
+    assert config.sources[1].name == "vc.ru"
+    assert config.sources[1].type == "rss"
+    assert config.sources[1].url == "https://vc.ru/rss/all"
+    assert config.sources[1].enabled is True
+
+
+def test_mvp_sources_are_rss_only(env_vars: None) -> None:
+    config = load_config()
+
+    assert config.sources
+    assert all(source.type == "rss" for source in config.sources)
 
 
 def test_env_overrides_yaml(env_vars: None, monkeypatch: pytest.MonkeyPatch) -> None:

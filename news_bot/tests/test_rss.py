@@ -90,3 +90,22 @@ async def test_disabled_source_returns_empty() -> None:
     items = await fetcher.fetch(source, max_news=5, timeout=5)
 
     assert items == []
+
+
+@pytest.mark.asyncio
+async def test_habr_rss_feed_returns_items() -> None:
+    fetcher = RssFetcher()
+    source = SourceConfig(
+        name="Habr",
+        type="rss",
+        url="https://habr.com/ru/rss/news/",
+        enabled=True,
+        category="tech",
+    )
+
+    items = await fetcher.fetch(source, max_news=3, timeout=30)
+
+    assert len(items) >= 1
+    assert all(item.source == "Habr" for item in items)
+    assert all(item.title for item in items)
+    assert all(item.url.startswith("https://") for item in items)
