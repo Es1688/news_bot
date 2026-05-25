@@ -57,7 +57,15 @@ docker compose -p newsbot -f infra/compose.prod.yml up -d --build
 docker compose -p newsbot -f infra/compose.prod.yml logs -f newsbot
 ```
 
-На VPS один раз создайте `/opt/newsbot/.env` и каталог `data/`. CI/CD (push в `main`/`master`/`dev`) собирает образ, пушит в DockerHub и деплоит через `infra/compose.prod.vps.yml`.
+На VPS один раз создайте `/opt/newsbot/.env` и каталог `data/`:
+
+```bash
+sudo mkdir -p /opt/newsbot/data
+# заполните /opt/newsbot/.env (BOT_TOKEN, CHANNEL_ID, ADMIN_IDS)
+sudo chown -R 10001:10001 /opt/newsbot/data   # uid контейнера appuser
+```
+
+CI/CD (push в `main`/`master`/`dev`) собирает образ, пушит в DockerHub и деплоит compose на VPS по SSH (base64, без scp). Права на `data/` выставляются автоматически через `alpine chown`.
 
 Secrets GitHub Actions: `DOCKER_USERNAME`, `DOCKER_PASSWORD`, `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`.  
 Variables (опционально): `DOCKER_IMAGE_REPOSITORY` (по умолчанию `content-fabric-newsbot`), `VPS_APP_DIR` (по умолчанию `/opt/newsbot`).

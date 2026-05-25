@@ -125,7 +125,9 @@ jobs:
           rm -f .deploy/_validate-compose.yml
           sed -e "s|__BOT_IMAGE__|${IMAGE}|g" -e "s|__APP_DIR__|${APP_DIR}|g" \
             infra/compose.prod.vps.yml > .deploy/compose.prod.yml
+          COMPOSE_B64="$(base64 -w0 .deploy/compose.prod.yml)"
           echo "app_dir=${APP_DIR}" >> "${GITHUB_OUTPUT}"
+          echo "compose_b64=${COMPOSE_B64}" >> "${GITHUB_OUTPUT}"
           echo "Rendered compose for ${IMAGE} -> ${APP_DIR}"
 
       - name: Prepare VPS application directory
@@ -147,16 +149,7 @@ jobs:
               echo "Missing ${APP_DIR}/.env on VPS"
               exit 1
             fi
-
-      - name: Copy compose to VPS
-        uses: appleboy/scp-action@v0.1.7
-        with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USER }}
-          key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || '22' }}
-          source: ".deploy/compose.prod.yml"
-          target: "${{ steps.vps_compose.outputs.app_dir }}/"
+            docker run --rm -v "${APP_DIR}/data:/data" alpine chown -R 10001:10001 /data
 
       - name: Deploy to VPS over SSH
         uses: appleboy/ssh-action@v1.2.0
@@ -164,13 +157,14 @@ jobs:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
           IMAGE_REPOSITORY: ${{ vars.DOCKER_IMAGE_REPOSITORY }}
           IMAGE_TAG: ${{ needs.build_and_push.outputs.image_tag }}
+          COMPOSE_B64: ${{ steps.vps_compose.outputs.compose_b64 }}
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT || '22' }}
           script_stop: true
-          envs: DOCKER_USERNAME,IMAGE_REPOSITORY,IMAGE_TAG
+          envs: DOCKER_USERNAME,IMAGE_REPOSITORY,IMAGE_TAG,COMPOSE_B64
           script: |
             set -euo pipefail
 
@@ -185,8 +179,13 @@ jobs:
               echo "IMAGE_NAME is empty. Check build job outputs."
               exit 1
             fi
+            if [ -z "${COMPOSE_B64:-}" ]; then
+              echo "COMPOSE_B64 is empty. Check render step output."
+              exit 1
+            fi
 
             IMAGE="${IMAGE_NAME_CLEAN}:${IMAGE_TAG_CLEAN}"
+            COMPOSE_FILE="${APP_DIR}/compose.prod.yml"
             echo "Deploying image ${IMAGE}"
 
             if docker compose version >/dev/null 2>&1; then
@@ -198,15 +197,22 @@ jobs:
               exit 1
             fi
 
-            docker pull "${IMAGE}"
-
-            if ! ${COMPOSE_CMD} -p newsbot -f "${APP_DIR}/compose.prod.yml" config >/dev/null; then
-              echo "Invalid compose file: ${APP_DIR}/compose.prod.yml"
-              sed -n '1,120p' "${APP_DIR}/compose.prod.yml"
+            echo "${COMPOSE_B64}" | base64 -d > "${COMPOSE_FILE}"
+            if grep -q '__APP_DIR__\|__BOT_IMAGE__' "${COMPOSE_FILE}"; then
+              echo "Compose file still contains unresolved placeholders"
+              sed -n '1,40p' "${COMPOSE_FILE}"
               exit 1
             fi
 
-            ${COMPOSE_CMD} -p newsbot -f "${APP_DIR}/compose.prod.yml" up -d --remove-orphans
+            docker pull "${IMAGE}"
+
+            if ! ${COMPOSE_CMD} -p newsbot -f "${COMPOSE_FILE}" config; then
+              echo "Invalid compose file: ${COMPOSE_FILE}"
+              sed -n '1,40p' "${COMPOSE_FILE}"
+              exit 1
+            fi
+
+            ${COMPOSE_CMD} -p newsbot -f "${COMPOSE_FILE}" up -d --remove-orphans
 
             bot_ready=""
             for _ in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15; do
@@ -219,6 +225,7 @@ jobs:
             if [ -z "${bot_ready}" ]; then
               echo "Timeout waiting for newsbot container"
               docker ps -a
+              docker logs newsbot --tail 50 2>&1 || true
               exit 1
             fi
 
