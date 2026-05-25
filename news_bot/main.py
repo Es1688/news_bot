@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import asyncio
 import contextlib
+import os
 from datetime import datetime, timezone
 
 from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
 
 from news_bot.bot.handlers import create_router
 from news_bot.bot.scheduler import scheduler_loop
@@ -22,7 +24,12 @@ async def main() -> None:
     db = Database(config.data_path)
     await db.initialize()
 
-    bot = Bot(token=config.bot_token)
+    proxy = os.getenv("TELEGRAM_PROXY", "").strip()
+    if proxy:
+        session = AiohttpSession(proxy=proxy)
+        bot = Bot(token=config.bot_token, session=session)
+    else:
+        bot = Bot(token=config.bot_token)
     publisher = TelegramPublisher(bot, config.channel_id)
     fetcher = RssFetcher()
     pipeline = Pipeline(config, fetcher, publisher, db)
