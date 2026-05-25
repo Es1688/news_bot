@@ -3,6 +3,8 @@ services:
     build: .
     restart: unless-stopped
     env_file: .env
+    environment:
+      DATABASE_PATH: /app/data/news_bot.db
     volumes:
       - ./data:/app/data
     healthcheck:

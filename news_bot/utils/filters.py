@@ -12,11 +12,13 @@ class KeywordFilter:
 
     def passes(self, item: NewsItem) -> bool:
         title = item.title.lower()
-        if self._matches_any(title, self.exclude_keywords):
+        exclude = [keyword for keyword in self.exclude_keywords if keyword.strip()]
+        include = [keyword for keyword in self.include_keywords if keyword.strip()]
+        if self._matches_any(title, exclude):
             return False
-        if not self.include_keywords:
+        if not include:
             return True
-        return self._matches_any(title, self.include_keywords)
+        return self._matches_any(title, include)
 
     @staticmethod
     def _matches_any(text: str, keywords: list[str]) -> bool:

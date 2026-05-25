@@ -106,7 +106,11 @@ def load_config() -> AppConfig:
         if value.strip().isdigit()
     ]
 
-    data_path = config_dir.parent / "data" / "news_bot.db"
+    data_env = os.getenv("DATABASE_PATH", "").strip()
+    if data_env:
+        data_path = Path(data_env)
+    else:
+        data_path = config_dir.parent / "data" / "news_bot.db"
 
     return AppConfig(
         bot_token=bot_token,
