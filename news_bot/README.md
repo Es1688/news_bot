@@ -13,18 +13,26 @@
 
 ## Запуск локально
 
-1. Установите зависимости:
+Требуется [uv](https://docs.astral.sh/uv/) и Python 3.12+.
+
+1. Из корня репозитория установите зависимости:
 
 ```bash
-pip install -r requirements.txt
+uv sync
 ```
 
-2. Создайте `.env` по примеру `.env.example` и заполните `BOT_TOKEN`, `CHANNEL_ID`.
+2. Создайте `news_bot/.env` по примеру `news_bot/.env.example` и заполните `BOT_TOKEN`, `CHANNEL_ID`.
 
 3. Запустите:
 
 ```bash
-python -m news_bot.main
+uv run python -m news_bot.main
+```
+
+Тесты:
+
+```bash
+uv run pytest
 ```
 
 ## Запуск через Docker Compose

@@ -7,12 +7,15 @@ WORKDIR /app
 
 RUN useradd --create-home --uid 10001 appuser
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 
-COPY . ./news_bot/
+COPY pyproject.toml uv.lock ./
+RUN uv sync --frozen --no-dev
 
-ENV PYTHONPATH=/app
+COPY news_bot ./news_bot/
+
+ENV PYTHONPATH=/app \
+    PATH="/app/.venv/bin:$PATH"
 
 RUN chown -R appuser:appuser /app
 USER appuser

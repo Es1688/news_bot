@@ -7,13 +7,13 @@ import pytest
 from news_bot.config.loader import load_config
 
 
-def test_no_heavy_dependencies_in_requirements() -> None:
-    requirements = (
-        Path(__file__).resolve().parents[1] / "requirements.txt"
+def test_no_heavy_dependencies_in_pyproject() -> None:
+    pyproject = (
+        Path(__file__).resolve().parents[2] / "pyproject.toml"
     ).read_text(encoding="utf-8").lower()
     banned = ["beautifulsoup", "lxml", "celery", "kafka", "psycopg", "sqlalchemy"]
     for package in banned:
-        assert package not in requirements
+        assert package not in pyproject
 
 
 def test_pipeline_has_no_telegram_imports() -> None:

@@ -160,7 +160,7 @@ news_bot/
 ├── main.py
 ├── Dockerfile
 ├── docker-compose.yml
-├── requirements.txt
+├── pyproject.toml
 ├── .env.example
 └── README.md
 ```
@@ -374,6 +374,8 @@ python-dotenv
 pytest
 pytest-asyncio
 ```
+
+Зависимости задаются в `pyproject.toml` (корень репозитория), локально — `uv sync`.
 
 HTML-зависимости добавляются позже:
 

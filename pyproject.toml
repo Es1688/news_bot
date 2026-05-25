@@ -1,0 +1,23 @@
+[project]
+name = "news-bot"
+version = "0.1.0"
+description = "Telegram RSS news bot MVP"
+requires-python = ">=3.12"
+dependencies = [
+    "aiogram>=3.0",
+    "aiohttp",
+    "feedparser",
+    "pyyaml",
+    "python-dotenv",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.21",
+]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+pythonpath = ["."]
+testpaths = ["news_bot/tests"]
