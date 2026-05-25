@@ -14,3 +14,4 @@ dist/
 venv/
 data/*.db
 data/*.sqlite
+.deploy/

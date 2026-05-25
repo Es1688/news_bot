@@ -35,12 +35,34 @@ uv run python -m news_bot.main
 uv run pytest
 ```
 
-## Запуск через Docker Compose
+## Запуск через Docker Compose (разработка)
+
+Из каталога `news_bot/`:
 
 ```bash
 cp .env.example .env
 docker compose up --build
 ```
+
+## Production-деплой
+
+Из корня репозитория (имена контейнеров совпадают с VPS):
+
+```bash
+# Остановить локальный uv-процесс, если запущен — иначе конфликт getUpdates
+pkill -f "news_bot.main" || true
+
+# Подготовить news_bot/.env (BOT_TOKEN, CHANNEL_ID, ADMIN_IDS)
+docker compose -p newsbot -f infra/compose.prod.yml up -d --build
+docker compose -p newsbot -f infra/compose.prod.yml logs -f newsbot
+```
+
+На VPS один раз создайте `/opt/newsbot/.env` и каталог `data/`. CI/CD (push в `main`/`master`/`dev`) собирает образ, пушит в DockerHub и деплоит через `infra/compose.prod.vps.yml`.
+
+Secrets GitHub Actions: `DOCKER_USERNAME`, `DOCKER_PASSWORD`, `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`.  
+Variables (опционально): `DOCKER_IMAGE_REPOSITORY` (по умолчанию `content-fabric-newsbot`), `VPS_APP_DIR` (по умолчанию `/opt/newsbot`).
+
+На production-сервере не задавайте `TELEGRAM_PROXY=127.0.0.1:...` — внутри контейнера это недоступно.
 
 ## Конфиг источников
 
