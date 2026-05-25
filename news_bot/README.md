@@ -65,7 +65,7 @@ sudo mkdir -p /opt/newsbot/data
 sudo chown -R 10001:10001 /opt/newsbot/data   # uid контейнера appuser
 ```
 
-CI/CD (push в `main`/`master`/`dev`) собирает образ, пушит в DockerHub и деплоит compose на VPS по SSH (base64, без scp). Права на `data/` выставляются автоматически через `alpine chown`.
+CI/CD (push в `main`) собирает образ, пушит в DockerHub и деплоит compose на VPS по SSH (base64, без scp). Права на `data/` выставляются автоматически через `alpine chown`.
 
 Secrets GitHub Actions: `DOCKER_USERNAME`, `DOCKER_PASSWORD`, `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`.  
 Variables (опционально): `DOCKER_IMAGE_REPOSITORY` (по умолчанию `content-fabric-newsbot`), `VPS_APP_DIR` (по умолчанию `/opt/newsbot`).
