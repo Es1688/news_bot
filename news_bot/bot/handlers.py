@@ -89,3 +89,6 @@ def format_timedelta(delta) -> str:
     hours, remainder = divmod(total_seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{hours}h {minutes}m {seconds}s"
+
+
+##### проверка деплоя
