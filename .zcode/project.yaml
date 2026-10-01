@@ -1,0 +1,25 @@
+version: 1
+name: news-bot
+type: python-service
+description: Telegram-бот — сбор RSS-новостей, фильтрация, дедупликация, публикация в канал.
+
+language: { name: python, version: "3.12" }
+runtime: { entry: main.py }
+
+repository:
+  platform: github
+  default_branch: main
+  strategy: github-flow
+
+quality:
+  test: .venv/bin/python -m pytest
+  lint: null
+
+constraints:
+  - секреты только в .env (по примеру .env.example); config/sources.yaml — только несекретные данные
+  - data/*.db — runtime-данные, вручную не править и не коммитить
+
+ai:
+  allow_shell: controlled
+  allow_git_push: confirm
+  execution_mode: build
