@@ -5,6 +5,7 @@ from pathlib import Path
 from unittest.mock import AsyncMock
 
 import pytest
+import pytest_asyncio
 
 from news_bot.config.loader import (
     AppConfig,
@@ -83,7 +84,7 @@ def app_config(tmp_path: Path) -> AppConfig:
     )
 
 
-@pytest.fixture
+@pytest_asyncio.fixture
 async def db(app_config: AppConfig) -> Database:
     database = Database(app_config.data_path)
     await database.initialize()

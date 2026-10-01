@@ -9,7 +9,7 @@ from news_bot.config.loader import load_config
 
 def test_no_heavy_dependencies_in_pyproject() -> None:
     pyproject = (
-        Path(__file__).resolve().parents[2] / "pyproject.toml"
+        Path(__file__).resolve().parents[1] / "pyproject.toml"
     ).read_text(encoding="utf-8").lower()
     banned = ["beautifulsoup", "lxml", "celery", "kafka", "psycopg", "sqlalchemy"]
     for package in banned:

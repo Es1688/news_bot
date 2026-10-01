@@ -1,8 +1,8 @@
 services:
   newsbot:
     build:
-      context: ..
-      dockerfile: news_bot/Dockerfile
+      context: .
+      dockerfile: Dockerfile
     restart: unless-stopped
     env_file: .env
     environment:

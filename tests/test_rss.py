@@ -92,6 +92,7 @@ async def test_disabled_source_returns_empty() -> None:
     assert items == []
 
 
+@pytest.mark.integration
 @pytest.mark.asyncio
 async def test_habr_rss_feed_returns_items() -> None:
     fetcher = RssFetcher()

@@ -3,10 +3,9 @@
 ## Что это за проект
 Telegram-бот (MVP): собирает RSS-новости из `config/sources.yaml`, фильтрует по
 ключевым словам, дедуплицирует в SQLite и публикует в Telegram-канал.
-Стек: Python 3.12, aiogram 3, feedparser, SQLite. Проект — часть Content Fabric;
-здесь лежит автономная копия пакета `news_bot` (Dockerfile и README рассчитаны
-на сборку из корня родительского репозитория, где находятся `pyproject.toml`
-и `uv.lock` — в этой копии их нет).
+Стек: Python 3.12, aiogram 3, feedparser, SQLite. Репозиторий самодостаточен:
+`pyproject.toml` и `uv.lock` в корне, Docker-сборка — из этого каталога
+(исторически — пакет `news_bot` из монорепо Content Fabric).
 
 ## Структура
 | Путь | Что это | Можно менять? |

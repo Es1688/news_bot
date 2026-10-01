@@ -12,7 +12,7 @@ COPY --from=ghcr.io/astral-sh/uv:latest /uv /usr/local/bin/uv
 COPY pyproject.toml uv.lock ./
 RUN uv sync --frozen --no-dev
 
-COPY news_bot ./news_bot/
+COPY . /app/news_bot/
 
 ENV PYTHONPATH=/app \
     PATH="/app/.venv/bin:$PATH"

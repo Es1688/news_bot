@@ -1,6 +1,16 @@
+.git/
+.zcode/
+docs/
+tests/
+scripts/
 .venv/
 __pycache__/
 *.pyc
 .pytest_cache/
 data/*.db
 .env
+Dockerfile
+docker-compose.yml
+.dockerignore
+README.md
+AGENTS.md
