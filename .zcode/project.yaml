@@ -1,0 +1,25 @@
+version: 1
+name: content-fabric
+type: python-service
+description: Telegram-бот для сбора RSS-новостей, фильтрации, дедупликации и публикации в канал (MVP)
+
+language:
+  name: python
+  version: "3.12"
+
+runtime:
+  entry: news_bot/main.py
+
+repository:
+  platform: github
+  default_branch: main
+  strategy: github-flow
+
+quality:
+  test: uv run pytest
+  lint: null
+
+ai:
+  allow_shell: controlled
+  allow_git_push: confirm
+  execution_mode: build

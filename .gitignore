@@ -12,6 +12,12 @@ dist/
 .env
 .venv/
 venv/
-data/*.db
-data/*.sqlite
+**/data/*.db
+**/data/*.sqlite
 .deploy/
+
+# ZCode / Engineering Hub
+.zcode/plans/
+
+# Editor debug logs
+.cursor/
