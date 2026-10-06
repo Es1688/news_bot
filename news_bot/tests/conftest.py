@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 from datetime import datetime, timezone
 from pathlib import Path
 from unittest.mock import AsyncMock
@@ -9,13 +10,55 @@ import pytest
 from news_bot.config.loader import (
     AppConfig,
     AppSettings,
+    FactoryConfig,
     FilterSettings,
+    LlmConfig,
     SourceConfig,
 )
+from news_bot.core.factory import ContentFactory
 from news_bot.core.models import NewsItem
 from news_bot.utils.db import Database
 
-from news_bot.tests.mocks import MockFetcher, MockPublisher
+from news_bot.tests.mocks import (
+    MockAlerter,
+    MockFetcher,
+    MockPostPublisher,
+    MockPublisher,
+    MockWriter,
+)
+
+
+def make_factory_config(**overrides) -> FactoryConfig:
+    """Hand-built FactoryConfig (no load_config / yaml involved)."""
+    defaults: dict = dict(
+        enabled=True,
+        dry_run=False,
+        interval_hours=4,
+        posts_per_cycle=1,
+        max_posts_per_day=10,
+        max_attempts=3,
+        stale_draft_minutes=30,
+        max_news_age_hours=24,
+        max_post_chars=1800,
+        active_hours=None,
+        timezone="UTC",
+        alert_after_failed_cycles=3,
+        circuit_breaker_after=3,
+        max_news_per_source=5,
+        include_keywords=[],
+        exclude_keywords=[],
+        llm=LlmConfig(
+            base_url="http://localhost:8080/v1",
+            model="test-model",
+            timeout=30,
+            max_tokens=800,
+            temperature=0.7,
+            api_key="test-api-key",
+        ),
+        prompt="test prompt",
+    )
+    defaults.update(overrides)
+    return FactoryConfig(**defaults)
 
 
 @pytest.fixture
@@ -48,7 +91,12 @@ def sample_items() -> list[NewsItem]:
 
 
 @pytest.fixture
-def app_config(tmp_path: Path) -> AppConfig:
+def factory_config() -> FactoryConfig:
+    return make_factory_config()
+
+
+@pytest.fixture
+def app_config(tmp_path: Path, factory_config: FactoryConfig) -> AppConfig:
     return AppConfig(
         bot_token="123456789:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
         channel_id="-1001234567890",
@@ -80,6 +128,7 @@ def app_config(tmp_path: Path) -> AppConfig:
             ),
         ],
         data_path=tmp_path / "news_bot.db",
+        factory=factory_config,
     )
 
 
@@ -98,6 +147,23 @@ def mock_fetcher() -> MockFetcher:
 @pytest.fixture
 def mock_publisher() -> MockPublisher:
     return MockPublisher()
+
+
+@pytest.fixture
+def factory(app_config: AppConfig, db: Database) -> ContentFactory:
+    """Default factory wiring with mock collaborators.
+
+    Tests needing specific scenarios build their own ContentFactory via
+    make_factory_config() and replace(app_config, factory=...).
+    """
+    return ContentFactory(
+        app_config,
+        MockFetcher(),
+        MockWriter(),
+        MockPostPublisher(),
+        MockAlerter(),
+        db,
+    )
 
 
 @pytest.fixture

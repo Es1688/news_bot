@@ -22,3 +22,8 @@ dev = [
 asyncio_mode = "auto"
 pythonpath = ["."]
 testpaths = ["news_bot/tests"]
+addopts = "-m 'not network and not llm'"
+markers = [
+    "network: tests hitting real external services (deselected by default)",
+    "llm: tests calling a real LLM API (manual run only)",
+]

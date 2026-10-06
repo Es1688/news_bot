@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from urllib.parse import urlparse
 
+import aiohttp
+
 from news_bot.config.loader import SourceConfig
 from news_bot.core.models import NewsItem
 from news_bot.parsers.habr import HabrFetcher
@@ -14,8 +16,10 @@ logger = get_logger(__name__)
 
 
 class CompositeFetcher:
-    def __init__(self) -> None:
-        self._rss = RssFetcher()
+    def __init__(self, session: aiohttp.ClientSession | None = None) -> None:
+        # Shared process-wide session (factory + digest in one process);
+        # None keeps the old per-call behavior.
+        self._rss = RssFetcher(session)
         self._habr = HabrFetcher()
         self._vc_ru = VcRuFetcher()
 

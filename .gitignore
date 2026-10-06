@@ -21,3 +21,6 @@ venv/
 
 # Editor debug logs
 .cursor/
+
+# SQLite runtime artifacts: WAL side files and pre-migration backups
+**/data/*.db*

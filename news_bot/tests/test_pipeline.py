@@ -86,6 +86,7 @@ async def test_filter_excludes_items_before_publish(
         filters=FilterSettings(include_keywords=["python"], exclude_keywords=[]),
         sources=app_config.sources,
         data_path=app_config.data_path,
+        factory=app_config.factory,
     )
     fetcher = MockFetcher(items=items)
     publisher = MockPublisher(success=True)

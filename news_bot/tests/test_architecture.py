@@ -24,6 +24,15 @@ def test_pipeline_has_no_telegram_imports() -> None:
     assert "TelegramPublisher" not in pipeline_source
 
 
+def test_factory_has_no_telegram_imports() -> None:
+    factory_source = (
+        Path(__file__).resolve().parents[1] / "core" / "factory.py"
+    ).read_text(encoding="utf-8")
+    assert "aiogram" not in factory_source
+    assert "TelegramPublisher" not in factory_source
+    assert "TelegramAlerter" not in factory_source
+
+
 def test_models_define_news_item_and_publisher_result() -> None:
     from news_bot.core.models import NewsItem, PublishedResult
     from news_bot.publishers.base import Publisher
