@@ -164,6 +164,7 @@ factory:
 | `LLM_MODEL` | переопределяет `factory.llm.model`, если задана |
 | `LLM_PROXY` | прокси для LLM-запросов (`socks5://…`/`http://…`), env-only; пустая — напрямую. Нужна только локально, когда провайдер блокирует прямой IP; RSS-сбор всегда идёт напрямую |
 | `FACTORY_ENABLED` | переопределяет `factory.enabled`, если задана |
+| `FACTORY_DRY_RUN` | dry-run фабрики (`true`/`false`): `true` — превью админам, `false` — публикация в канал; переопределяет `factory.dry_run`, если задана. На VPS — штатный переключатель раскатки (после смены — пересоздать контейнер `docker compose up -d`, `docker restart` не перечитывает `env_file`) |
 | `FACTORY_INTERVAL_HOURS` | переопределяет `factory.interval_hours`, если задана |
 | `FACTORY_ACTIVE_HOURS` | окно активности для docker-healthcheck (дефолт `08:00-23:00`); сравнивается с локальным временем контейнера (обычно UTC) — сама фабрика использует `factory.timezone` |
 

@@ -136,7 +136,7 @@ def _parse_factory(raw: dict[str, Any]) -> FactoryConfig:
 
     return FactoryConfig(
         enabled=_env_bool("FACTORY_ENABLED", bool(raw.get("enabled", False))),
-        dry_run=bool(raw.get("dry_run", True)),
+        dry_run=_env_bool("FACTORY_DRY_RUN", bool(raw.get("dry_run", True))),
         interval_hours=_env_int(
             "FACTORY_INTERVAL_HOURS", int(raw.get("interval_hours", 4))
         ),

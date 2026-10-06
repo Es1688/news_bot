@@ -41,6 +41,7 @@ uv run pytest                             # тесты
 | `LLM_MODEL` | имя модели; переопределяет `factory.llm.model` |
 | `LLM_PROXY` | прокси для LLM-запросов (`socks5://…`/`http://…`); только для локального запуска при блокировке прямого IP провайдером, на VPS не задавать |
 | `FACTORY_ENABLED` | включает/выключает фабрику; переопределяет `factory.enabled` из yaml |
+| `FACTORY_DRY_RUN` | dry-run фабрики (`true`/`false`): `true` — превью админам, `false` — публикация в канал; переопределяет `factory.dry_run` из yaml. Штатный переключатель раскатки на VPS |
 | `FACTORY_INTERVAL_HOURS` | интервал цикла фабрики в часах; переопределяет `factory.interval_hours` |
 
 Полный список ключей секции `factory` в `news_bot/config/sources.yaml`, команды

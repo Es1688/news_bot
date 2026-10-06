@@ -19,6 +19,7 @@ def env_vars(monkeypatch: pytest.MonkeyPatch) -> None:
     # required for the default tests; overrides are cleared for hermeticity
     monkeypatch.setenv("LLM_API_KEY", "test-llm-key")
     monkeypatch.delenv("FACTORY_ENABLED", raising=False)
+    monkeypatch.delenv("FACTORY_DRY_RUN", raising=False)
     monkeypatch.delenv("FACTORY_INTERVAL_HOURS", raising=False)
     monkeypatch.delenv("LLM_BASE_URL", raising=False)
     monkeypatch.delenv("LLM_MODEL", raising=False)
@@ -177,6 +178,18 @@ def test_factory_env_overrides_yaml(
     assert config.factory.llm.base_url == "http://localhost:8080/v1"
     assert config.factory.llm.model == "custom-model"
     assert config.factory.llm.proxy == "socks5://127.0.0.1:10808"
+
+
+def test_factory_dry_run_env_overrides_yaml(
+    env_vars: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    # rollout switch on the VPS: FACTORY_DRY_RUN=false turns on channel
+    # publishing without touching sources.yaml in the repo
+    monkeypatch.setenv("FACTORY_DRY_RUN", "false")
+
+    config = load_config()
+
+    assert config.factory.dry_run is False
 
 
 def test_factory_llm_disable_reasoning_defaults_off(monkeypatch) -> None:
